@@ -2,6 +2,12 @@
 
 Obsidian vault + generation scripts for the French civics exam (naturalisation / CSP residency permit).
 
+
+
+https://github.com/user-attachments/assets/d08d9a6b-8e53-4baf-9c40-eea7053cc988
+
+
+
 Converts `unified_dataset_complete.json` (247 MCQ questions) into an Obsidian knowledge graph: one note per question, linked to 5 theme hubs, with cross-cutting concept notes.
 
 **Parent repo**: [`civique/`](https://github.com/sdsmnc221/ec-in-cli) — Python dataset pipeline + CLI exam trainer.
