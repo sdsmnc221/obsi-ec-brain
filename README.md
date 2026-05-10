@@ -20,19 +20,20 @@ Converts `unified_dataset_complete.json` (247 MCQ questions) into an Obsidian kn
 vault/
 ├── questions/        245 notes (conn-0001.md … mise-XXXX.md)
 ├── themes/           5 theme hub notes
-├── knowledge/         119 concept notes (Marianne, Sénat, Révolution…)
+├── concepts/         119 concept notes (Marianne, Sénat, Révolution…)
+├── timelines/        timeline civique / républicains
 └── _index.md         Global dashboard + Dataview queries
 ```
 
 ### Themes (hubs)
 
-| Theme                                 | Questions |
-| ------------------------------------- | --------- |
-| Principes et valeurs de la République | 106       |
-| Vivre dans la société française       | 76        |
-| Système institutionnel et politique   | 31        |
-| Histoire, géographie et culture       | 20        |
-| Droits et devoirs                     | 14        |
+| Theme                                 |
+| ------------------------------------- |
+| Principes et valeurs de la République |
+| Vivre dans la société française       |
+| Système institutionnel et politique   |
+| Histoire, géographie et culture       |
+| Droits et devoirs                     |
 
 ### Question note format
 
@@ -76,11 +77,19 @@ correct: false
 
 All commands are run from the `obsi-ec-brain/` directory. Replace the dataset paths with your actual files.
 
+**Example dataset**
+
+I think it can be found here:
+
+- Dataset sample:  [ec-in-cli](https://github.com/sdsmnc221/ec-in-cli/blob/main/dataset_sample.json).
+- Timeline sample (maybe full): [whim-ec](https://github.com/sdsmnc221/whim-ec/blob/main/assets/data/timeline_dataset.json).
+---
+
 **Step 1 — Question notes + theme hubs**
 
 ```bash
 python3 00-json-to-vault.py \
-  --input ../ec-in-cli/unified_dataset_complete_20260504.json \
+  --input ../ec-in-cli/dataset_sample.json \
   --output ./vault
 ```
 
@@ -88,16 +97,16 @@ python3 00-json-to-vault.py \
 
 ```bash
 python3 01a-timeline-to-vault.py \
-  --input ../ec-in-cli/timeline_dataset_20260504.json \
+  --input ../ec-in-cli/timeline_dataset.json \
   --output ./vault \
-  --link-questions ../ec-in-cli/unified_dataset_complete_20260504.json
+  --link-questions ../ec-in-cli/dataset_sample.json
 ```
 
 **Step 3 — Concept stubs from MCQ questions**
 
 ```bash
 python3 01c-question-to-concept.py \
-  --input ../ec-in-cli/unified_dataset_complete_20260504.json \
+  --input ../ec-in-cli/dataset_sample.json \
   --output ./vault
 ```
 
