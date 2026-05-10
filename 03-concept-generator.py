@@ -1,5 +1,5 @@
 """
-fill_concepts.py — Enrichit vault/concepts/*.md avec Claude Haiku
+fill_concepts.py — Enrichit vault/concepts/*.md avec Claude Haiku (ou Sonnet)
 via l'API Anthropic.
 
 Usage :
@@ -8,6 +8,7 @@ Usage :
   python3 fill_concepts.py --force          # réécrit même les notes déjà remplies
   python3 fill_concepts.py --limit 10       # batch limité pour tester
   python3 fill_concepts.py --provider hf    # utilise HuggingFace à la place
+  python3 fill_concepts.py --sonnet         # utilise claude-sonnet-4-6 (plus lent, meilleur)
 """
 
 import os
@@ -52,11 +53,17 @@ Réponds UNIQUEMENT avec ce Markdown (sans titre, il existe déjà) :
 
 # ── Providers ─────────────────────────────────────────────────────────────────
 
+ANTHROPIC_MODEL_HAIKU  = "claude-haiku-4-5-20251001"
+ANTHROPIC_MODEL_SONNET = "claude-sonnet-4-6"
+
+_anthropic_model = ANTHROPIC_MODEL_HAIKU  # overridden by --sonnet
+
+
 def call_anthropic(concept: str) -> str:
     import anthropic
     client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
     msg = client.messages.create(
-        model="claude-haiku-4-5-20251001",
+        model=_anthropic_model,
         max_tokens=512,
         system=SYSTEM_PROMPT,
         messages=[{"role": "user", "content": build_user_prompt(concept)}],
@@ -145,7 +152,11 @@ def main():
         description="Enrichit vault/concepts/*.md via Claude Haiku ou HuggingFace"
     )
     parser.add_argument("--vault",    default="./vault")
+    parser.add_argument("--concepts-dir", default=None,
+                        help="Override concepts folder (default: <vault>/concepts)")
     parser.add_argument("--provider", choices=["anthropic", "hf"], default="anthropic")
+    parser.add_argument("--sonnet",   action="store_true",
+                        help="Utilise claude-sonnet-4-6 au lieu de Haiku (anthropic only)")
     parser.add_argument("--force",    action="store_true",
                         help="Réécrit même les notes déjà remplies")
     parser.add_argument("--limit",    type=int, default=None,
@@ -155,7 +166,11 @@ def main():
     parser.add_argument("--dry-run",  action="store_true")
     args = parser.parse_args()
 
-    concepts_dir = Path(args.vault) / "concepts"
+    if args.sonnet:
+        global _anthropic_model
+        _anthropic_model = ANTHROPIC_MODEL_SONNET
+
+    concepts_dir = Path(args.concepts_dir) if args.concepts_dir else Path(args.vault) / "concepts"
     if not concepts_dir.exists():
         print(f"❌ Dossier introuvable : {concepts_dir}")
         return
@@ -164,7 +179,8 @@ def main():
     print(f"📂 {len(notes)} notes trouvées dans {concepts_dir}")
 
     call_fn = PROVIDERS[args.provider]
-    print(f"🤖 Provider : {args.provider}")
+    model_label = _anthropic_model if args.provider == "anthropic" else args.provider
+    print(f"🤖 Provider : {args.provider}  ({model_label})")
 
     to_process = []
     for note in notes:

@@ -1,65 +1,37 @@
 # Examen Civique — Index
 
 ## Statistiques
-
-| Thème                                     | Questions |
-| ----------------------------------------- | --------- |
-| [[Droits et devoirs]]                     | 91        |
-| [[Histoire, géographie et culture]]       | 44        |
-| [[Système institutionnel et politique]]   | 44        |
-| [[Principes et valeurs de la République]] | 34        |
-| [[Vivre dans la société française]]       | 32        |
-| **Total**                                 | **245**   |
+| Thème | Questions |
+|---|---|
+| [[Droits et devoirs]] | 197 |
+| [[Histoire, géographie et culture]] | 140 |
+| [[Système institutionnel et politique]] | 107 |
+| [[Principes et valeurs de la République]] | 77 |
+| [[Vivre dans la société française]] | 67 |
+| **Total** | **588** |
 
 ## Révision Spaced Repetition
-
 Decks disponibles :
-
 - `#flashcards/Principes` — Principes et valeurs
 - `#flashcards/Société` — Société française
 - `#flashcards/Institutions` — Institutions
 - `#flashcards/Histoire` — Histoire & culture
 - `#flashcards/Droits` — Droits et devoirs
 
-## Queries Dataview
-
-### Questions non vues
+## Dataview — Questions à revoir
 
 ```dataview
-TABLE theme, difficulte
-FROM "vault/questions"
-WHERE vues = 0
-SORT difficulte DESC
-```
-
-### Stats
-
-#### Questions difficiles
-
-```dataview
-TABLE vues, erreurs, difficulte_calculee
-FROM "vault/questions"
-WHERE difficulte_calculee = "hard" OR difficulte_calculee = "piege"
-SORT erreurs DESC
-```
-
-#### Questions Stats
-
-```dataview
-TABLE
-  vues,
-  tentatives,
-  correct_count,
-  (temps_total_ms / vues) AS "moy ms",
-  difficulte_calculee
-FROM "vault/questions"
+TABLE vues, correct_count, difficulte_calculee
+FROM "questions"
 WHERE vues > 0
 SORT (vues - correct_count) / vues DESC
+LIMIT 20
 ```
 
-### Debug
-
+## Dataview — Non vues
 ```dataview
-TABLE file.path
-LIMIT 5
+TABLE theme, difficulte
+FROM "questions"
+WHERE vues = 0
+SORT theme ASC
 ```
